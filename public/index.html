@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explora Pokémon y organiza tu colección personal." />
+    <meta name="theme-color" content="#f7f5ef" />
+    <title>PokéDex Manager</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <a class="brand" href="#explore" aria-label="PokéDex Manager, inicio">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span><b>PokéDex</b><small>Manager</small></span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Navegación principal">
+        <button class="nav-link is-active" data-view="explore">Explorar</button>
+        <button class="nav-link" data-view="collection">
+          Mi colección <span class="nav-count" id="nav-count">0</span>
+        </button>
+      </nav>
+
+      <nav class="account-area" aria-label="Cuenta">
+        <button class="button button-ghost" id="login-button">Iniciar sesión</button>
+        <button class="user-menu" id="user-menu" hidden aria-label="Abrir menú de usuario">
+          <span class="avatar" id="user-avatar">T</span>
+          <span class="user-copy"><b id="user-name"></b><small>Entrenador</small></span>
+        </button>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="view" id="explore-view">
+        <header class="hero">
+          <hgroup class="hero-copy">
+            <p class="eyebrow">Tu próxima aventura empieza aquí</p>
+            <h1>Conoce, descubre,<br /><em>colecciona.</em></h1>
+            <p class="hero-intro">Explora el mundo Pokémon y construye una colección que sea solo tuya.</p>
+          </hgroup>
+          <figure class="hero-orbit" aria-hidden="true">
+            <span class="orbit orbit-one"></span>
+            <span class="orbit orbit-two"></span>
+            <span class="hero-ball"><i></i></span>
+            <span class="spark spark-one">✦</span>
+            <span class="spark spark-two">✧</span>
+          </figure>
+        </header>
+
+        <section class="catalog" aria-labelledby="catalog-title">
+          <header class="section-heading">
+            <hgroup>
+              <p class="eyebrow">Pokédex nacional</p>
+              <h2 id="catalog-title">Encuentra a tu favorito</h2>
+            </hgroup>
+            <p id="result-label" class="result-label" aria-live="polite">Cargando Pokémon…</p>
+          </header>
+
+          <form class="search-bar" id="search-form" role="search">
+            <label class="search-field">
+              <span class="sr-only">Buscar por nombre o número</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg>
+              <input id="search-input" type="search" placeholder="Busca por nombre o número…" autocomplete="off" />
+            </label>
+            <label class="type-field">
+              <span class="sr-only">Filtrar por tipo</span>
+              <select id="type-filter">
+                <option value="">Todos los tipos</option>
+                <option value="normal">Normal</option>
+                <option value="fire">Fuego</option>
+                <option value="water">Agua</option>
+                <option value="electric">Eléctrico</option>
+                <option value="grass">Planta</option>
+                <option value="ice">Hielo</option>
+                <option value="fighting">Lucha</option>
+                <option value="poison">Veneno</option>
+                <option value="ground">Tierra</option>
+                <option value="flying">Volador</option>
+                <option value="psychic">Psíquico</option>
+                <option value="bug">Bicho</option>
+                <option value="rock">Roca</option>
+                <option value="ghost">Fantasma</option>
+                <option value="dragon">Dragón</option>
+                <option value="dark">Siniestro</option>
+                <option value="steel">Acero</option>
+                <option value="fairy">Hada</option>
+              </select>
+            </label>
+            <button class="button button-dark" type="submit">Buscar</button>
+          </form>
+
+          <section class="pokemon-grid" id="pokemon-grid" aria-label="Resultados de la Pokédex" aria-live="polite"></section>
+          <section class="empty-state" id="explore-empty" aria-labelledby="explore-empty-title" hidden>
+            <span class="empty-icon" aria-hidden="true">?</span>
+            <h3 id="explore-empty-title">No encontramos coincidencias</h3>
+            <p>Prueba con otro nombre, número o tipo.</p>
+            <button class="button button-light" id="clear-search">Limpiar búsqueda</button>
+          </section>
+          <nav class="pagination" id="pagination" aria-label="Paginación de resultados">
+            <button class="page-button" id="previous-page" aria-label="Página anterior">←</button>
+            <output id="page-label" aria-live="polite">Página 1</output>
+            <button class="page-button" id="next-page" aria-label="Página siguiente">→</button>
+          </nav>
+        </section>
+      </section>
+
+      <section class="view" id="collection-view" hidden>
+        <header class="collection-hero">
+          <hgroup>
+            <p class="eyebrow">Espacio personal</p>
+            <h1>Mi colección</h1>
+            <p>Tu equipo, tus favoritos y las historias que has guardado.</p>
+          </hgroup>
+          <dl class="stats-row" id="stats-row" aria-label="Resumen de la colección">
+            <div class="stat"><dt>Pokémon</dt><dd id="total-stat">0</dd></div>
+            <div class="stat"><dt>Favoritos</dt><dd id="favorite-stat">0</dd></div>
+            <div class="stat"><dt>Tipos</dt><dd id="type-stat">0</dd></div>
+          </dl>
+        </header>
+
+        <section class="team-suggestions" aria-labelledby="suggestions-title">
+          <header class="suggestions-heading">
+            <hgroup>
+              <p class="eyebrow">Tu colección</p>
+              <h2 id="suggestions-title">Sugerencias para tu equipo</h2>
+            </hgroup>
+          </header>
+          <p class="suggestions-intro">
+            Revisa los tipos que ya tienes y descubre opciones para ampliar tu colección.
+          </p>
+          <div class="suggestions-controls">
+            <p id="suggestions-status" aria-live="polite">Agrega al menos un Pokémon para ver sugerencias.</p>
+            <button class="button button-dark" id="generate-suggestions" type="button" disabled>
+              Ver sugerencias
+            </button>
+          </div>
+          <section class="suggestions-results" id="suggestions-result" aria-live="polite" hidden>
+            <p class="suggestions-overview" id="suggestions-overview"></p>
+            <div class="suggestions-findings">
+              <section aria-labelledby="suggestions-strengths-title">
+                <h3 id="suggestions-strengths-title">Lo que ya cubres</h3>
+                <ul id="suggestions-strengths"></ul>
+              </section>
+              <section aria-labelledby="suggestions-gaps-title">
+                <h3 id="suggestions-gaps-title">Tipos por explorar</h3>
+                <ul id="suggestions-gaps"></ul>
+              </section>
+            </div>
+            <section class="suggestions-list" aria-labelledby="suggestions-list-title">
+              <header>
+                <h3 id="suggestions-list-title">Pokémon sugeridos</h3>
+                <small id="suggestions-label"></small>
+              </header>
+              <div class="recommendation-grid" id="suggestion-grid"></div>
+            </section>
+          </section>
+        </section>
+
+        <header class="collection-toolbar">
+          <hgroup>
+            <p class="eyebrow">Guardados</p>
+            <h2>Tu equipo Pokémon</h2>
+          </hgroup>
+          <label class="compact-search">
+            <span class="sr-only">Buscar en mi colección</span>
+            <input id="collection-search" type="search" placeholder="Buscar en mi colección…" />
+          </label>
+        </header>
+        <section class="pokemon-grid" id="collection-grid" aria-label="Pokémon guardados"></section>
+        <section class="empty-state collection-empty" id="collection-empty" aria-labelledby="collection-empty-title" hidden>
+          <span class="empty-ball" aria-hidden="true"><i></i></span>
+          <h3 id="collection-empty-title">Tu colección espera su primer Pokémon</h3>
+          <p>Explora la Pokédex y guarda a los que quieras llevar contigo.</p>
+          <button class="button button-dark" data-go-explore>Explorar Pokédex</button>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span class="mini-brand"><i></i></span>
+      <p>PokéDex Manager · Construido con PokéAPI</p>
+      <p>Los datos e imágenes pertenecen a sus respectivos propietarios.</p>
+    </footer>
+
+    <dialog class="modal auth-modal" id="auth-modal">
+      <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+      <figure class="auth-decoration" aria-hidden="true"><span><i></i></span></figure>
+      <section class="auth-content" aria-labelledby="auth-title">
+        <p class="eyebrow">Bienvenido, entrenador</p>
+        <h2 id="auth-title">Inicia sesión</h2>
+        <p id="auth-subtitle">Accede a tu colección desde cualquier momento.</p>
+        <form id="auth-form">
+          <label id="name-field" hidden>
+            Nombre
+            <input name="name" autocomplete="name" placeholder="¿Cómo te llamas?" />
+          </label>
+          <label>
+            Correo electrónico
+            <input name="email" type="email" autocomplete="email" required placeholder="entrenador@ejemplo.com" />
+          </label>
+          <label>
+            Contraseña
+            <input name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" required placeholder="Mínimo 8 caracteres" aria-describedby="password-hint" />
+            <small id="password-hint">Usa tu contraseña para acceder.</small>
+          </label>
+          <output class="form-error" id="auth-error" role="alert"></output>
+          <button class="button button-dark button-wide" id="auth-submit" type="submit">Iniciar sesión</button>
+        </form>
+        <p class="auth-switch">¿Aún no tienes cuenta? <button id="auth-toggle">Crear cuenta</button></p>
+      </section>
+    </dialog>
+
+    <dialog class="modal detail-modal" id="detail-modal">
+      <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+      <section id="detail-content" aria-live="polite"></section>
+    </dialog>
+
+    <dialog class="modal account-modal" id="account-modal">
+      <button class="modal-close" data-close-modal aria-label="Cerrar">×</button>
+      <p class="eyebrow">Tu cuenta</p>
+      <h2 id="account-name"></h2>
+      <p id="account-email" class="muted"></p>
+      <button class="button button-light button-wide" id="logout-button">Cerrar sesión</button>
+    </dialog>
+
+    <section class="toast-region" id="toast-region" aria-label="Notificaciones" aria-live="polite"></section>
+  </body>
+</html>
